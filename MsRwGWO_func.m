@@ -32,7 +32,7 @@ Positions=VRmin+(VRmax-VRmin).*rand(SearchAgents_no,dim);
 if dim==2
     Positions=X_suru;
 end
-fitness=feval(fhd,Positions',varargin{:}); % fitness degerleri bulunur...
+fitness=feval(fhd,Positions',varargin{:}); % calculate fitness values...
 
 fitcount=SearchAgents_no;
 for i=1:SearchAgents_no  
@@ -57,10 +57,10 @@ gbest = Alpha_pos;
 gbestval = Alpha_score;
 gbest_position(1,:) = gbest;
 
-Distance = abs(Positions(1,1)-Positions(:,1)); % Analiz için eklendi...
+Distance = abs(Positions(1,1)-Positions(:,1)); 
 DistanceSum(1) = sum(Distance)/(SearchAgents_no-1);
 % 2. Search History Analysis
-if dim==2 % 2 boyut icin yapilacak...
+if dim==2 % 2d dimension
 	refresh = 100;
 	figure(21)
 
@@ -87,19 +87,13 @@ t=[];k=1;
     while fitcount<dim*10000 %% && abs(gbestval-varargin{:}*100) > 1e-8
     old_Positions=Positions; 
 	old_fitness=fitness;
-	% The parameter 'a' is calculated by using modified equation given below:
+    % The parameter 'a' is calculated by using modified equation given below:
     % Shubham Gupta, Kusum Deep, Seyedali Mirjalili, Joong Hoon Kim, 
     % "A Modified Sine Cosine Algorithm with Novel Transition Parameter and 
     % Mutation Operator for Global Optimization",Expert Systems With Applications 
     %----------------------------------------------------------------------------
     a=2*sin((1-k/Max_iter)*(pi/2)); % original -> 2*sin((1-(1:1000)./Max_iter).*(pi/2))+0.5
-    % for plotting a's curve...
-    % plot(2*sin((1-(1:1000)./Max_iter).*(pi/2)));
-    %----------------------------------------------------------------------------
-    % Old equation
-    % a=2-k*((2)/Max_iter); % a decreases linearly from 2 to 0
-    % plot(2-(1:1000).*((2)/Max_iter));
-    
+    %----------------------------------------------------------------------------    
     % Update the Position of search agents including omegas
     for i=1:size(Positions,1)
         for j=1:size(Positions,2)     
@@ -130,20 +124,16 @@ t=[];k=1;
             
             D_delta=abs(C3*Delta_pos(j)-Positions(i,j)); % Equation (3.5)-part 3
             X3=Delta_pos(j)-A3*D_delta; % Equation (3.5)-part 3             
-			% The new weighted updating mechanism (Eq. 3.7 in original paper of Mirjalili)
-			%------------------------------------------------------------------------            
-% % % 			r = rand(3,1);
-% % % 			w=r./sum(r,1); % weights are determined randomly
+           % The new weighted updating mechanism (Eq. 3.7 in original paper of Mirjalili)
+           %------------------------------------------------------------------------            
             Sum_score=(1/Alpha_score)+(1/Beta_score)+(1/Delta_score);
             w(1)=(1/Alpha_score)/Sum_score;
             w(2)=(1/Beta_score)/Sum_score;
             w(3)=(1/Delta_score)/Sum_score;
-% % %             w=sort(w,'descend'); % sorting weight as descend
-			Positions(i,j) = w(1)*X1+w(2)*X2+w(3)*X3;% Modified Equation (3.7)
-% % %             Positions(i,j) = (X1+X2+X3)/3;
+            Positions(i,j) = w(1)*X1+w(2)*X2+w(3)*X3;% Modified Equation (3.7)
         end
 		%------------------------------------------------------------------------
-		%% mutasyon operatoru...
+		%% mutation operator
 		%------------------------------------------------------------------------
 		if rand()<0.005
 			nmu=ceil(0.1*dim);
@@ -152,24 +142,21 @@ t=[];k=1;
 			Positions(i,rn)=Positions(i,rn)+sigma.*randn(size(rn))';
 		end    
 		%------------------------------------------------------------------------
-		Positions(i,:) = boundConstraint(Positions(i,:), old_Positions(i,:),lu); % yeni eklendi...
+		Positions(i,:) = boundConstraint(Positions(i,:), old_Positions(i,:),lu); % boundary checking mechanism...
 		%------------------------------------------------------------------------
     end   
-	
-% % % 	Positions = ((Positions>=VRmin) & (Positions<=VRmax)).*Positions...
-% % %                 + (Positions<VRmin).*(VRmin+0.25.*(VRmax-VRmin).*rand(SearchAgents_no,dim))...
-% % % 				+ (Positions>VRmax).*(VRmax-0.25.*(VRmax-VRmin).*rand(SearchAgents_no,dim));	
-				
+			
 	for i=1:size(Positions,1)  
         
         % Calculate objective function for each search agent
 		fitness(i)=feval(fhd,Positions(i,:)',varargin{:});
-        fitcount=fitcount+1;
+                fitcount=fitcount+1;
+	% Selection mechanism...
 		if 	old_fitness(i) < fitness(i)
 			Positions(i,:) = old_Positions(i,:); 
 			fitness(i) = old_fitness(i);
 		end
-        % Update Alpha, Beta, and Delta
+        % NEW Update Alpha, Beta, and Delta Wolves...
 		if fitness(i)<Alpha_score 
 			Delta_score=Beta_score; % Update delta
 			Delta_pos=Beta_pos;
@@ -199,14 +186,12 @@ t=[];k=1;
 	k=k+1;
         
 	gbest_position(k,:)=gbest;
-	Distance = abs(Positions(1,1)-Positions(:,1)); % Analiz için eklendi...
+	Distance = abs(Positions(1,1)-Positions(:,1));
 	DistanceSum(k) = sum(Distance)/(SearchAgents_no-1);
         % 2. Search History Analysis
-		if dim==2 && (rem(fitcount/SearchAgents_no,refresh) == 0)% 2 boyut icin yapilacak...
+		if dim==2 && (rem(fitcount/SearchAgents_no,refresh) == 0)
 			figure(21)
 			plot(Positions(:,1),Positions(:,2),'ko','MarkerSize',6,'MarkerFaceColor','black');
-		%	plot(Positions(:,1),Positions(:,2),'ks','MarkerSize',8,'color',rand(1,3));
-		%	plot(gbest(1),gbest(2),'k*','MarkerSize',8);
 			xlabel('x_1'); ylabel('x_2'); title(str);
 			drawnow
 		end
@@ -218,7 +203,7 @@ t=[];k=1;
 			subplot(2,2,[1 3]);
 			contour(x1', x2', x3'); hold on; 
 			plot(gbest_position(:,1), gbest_position(:,2), 'ks', 'MarkerSize', 7);
-            hold on 
+            		hold on 
 			plot(gbest_position(end,1), gbest_position(end,2), 'rs', 'MarkerSize', 7);
 			str = sprintf('Trajectory of Elite FN%d',varargin{:});
 			xlabel('x_1'); ylabel('x_2');  title(str);
@@ -226,12 +211,12 @@ t=[];k=1;
 			hold on			
 			plot(SearchAgents_no:SearchAgents_no:fitcount,gbest_position(:,1),'r');
 			xlabel('Function Evaluations'); ylabel('x_1 position');
-            legend('GWO','MsRwGWO')
+            		% legend('GWO','MsRwGWO')
 			subplot(2,2,4);
 			hold on			
 			plot(SearchAgents_no:SearchAgents_no:fitcount,gbest_position(:,2),'r');
 			xlabel('Function Evaluations'); ylabel('x_2 position');
-            legend('GWO','MsRwGWO')
+            		% legend('GWO','MsRwGWO')
 			drawnow
 			% 4. Average Distance Analysis
 			figure(13);
@@ -240,8 +225,8 @@ t=[];k=1;
 			xlabel('Function Evaluations');
 			ylabel('Average distance');
 			str = sprintf('Average Distance of FN%d',varargin{:});
-            title(str);
-			legend('GWO','MsRwGWO')
-            drawnow
+            		title(str);
+			% legend('GWO','MsRwGWO')
+            		drawnow
 		end
 end
