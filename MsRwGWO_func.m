@@ -1,9 +1,9 @@
 %   A Multi-strategy Random weighted Gray Wolf Optimizer            %
 %                       (MsRwGWO)                                   %
-%																	%
+%								    %
 %       A Multi-strategy Random weighted Gray Wolf Optimizer        %
 %           for short-term wind speed forecasting                   %
-%          Tufan Inac, Emrah Dokur & Ugur Yuzgec                   %
+%          Tufan Inac, Emrah Dokur & Ugur Yuzgec                    %
 
 function [gbest,gbestval,fitcount,t]= MsRwGWO_func(fhd,dim,SearchAgents_no,Max_iter,VRmin,VRmax,X_suru,varargin)
 rand('seed',sum(100*clock));
