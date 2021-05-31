@@ -84,56 +84,53 @@ if dim==2 % 2d dimension
 	% plot(gbest(1),gbest(2),'k*','MarkerSize',8);
 end
 t=[];k=1;
-    while fitcount<dim*10000 %% && abs(gbestval-varargin{:}*100) > 1e-8
+    while fitcount<dim*10000
     old_Positions=Positions; 
 	old_fitness=fitness;
-    % The parameter 'a' is calculated by using modified equation given below:
-    % Shubham Gupta, Kusum Deep, Seyedali Mirjalili, Joong Hoon Kim, 
-    % "A Modified Sine Cosine Algorithm with Novel Transition Parameter and 
-    % Mutation Operator for Global Optimization",Expert Systems With Applications 
+    % The parameter 'a' is calculated by using modified equation given below: 
     %----------------------------------------------------------------------------
     a=2*sin((1-k/Max_iter)*(pi/2)); % original -> 2*sin((1-(1:1000)./Max_iter).*(pi/2))+0.5
     %----------------------------------------------------------------------------    
-    % Update the Position of search agents including omegas
+    % Update the Position of search agents including omega wolves...
     for i=1:size(Positions,1)
         for j=1:size(Positions,2)     
                        
             r1=rand(); % r1 is a random number in [0,1]
             r2=rand(); % r2 is a random number in [0,1]
             
-            A1=2*a*r1-a; % Equation (3.3)
-            C1=2*r2; % Equation (3.4)
+            A1=2*a*r1-a; 
+            C1=2*r2; 
             
-            D_alpha=abs(C1*Alpha_pos(j)-Positions(i,j)); % Equation (3.5)-part 1
-            X1=Alpha_pos(j)-A1*D_alpha; % Equation (3.6)-part 1
+            D_alpha=abs(C1*Alpha_pos(j)-Positions(i,j));
+            X1=Alpha_pos(j)-A1*D_alpha;
                        
             r1=rand();
             r2=rand();
             
-            A2=2*a*r1-a; % Equation (3.3)
-            C2=2*r2; % Equation (3.4)
+            A2=2*a*r1-a; 
+            C2=2*r2; 
             
-            D_beta=abs(C2*Beta_pos(j)-Positions(i,j)); % Equation (3.5)-part 2
-            X2=Beta_pos(j)-A2*D_beta; % Equation (3.6)-part 2       
+            D_beta=abs(C2*Beta_pos(j)-Positions(i,j)); 
+            X2=Beta_pos(j)-A2*D_beta;      
             
             r1=rand();
             r2=rand(); 
             
-            A3=2*a*r1-a; % Equation (3.3)
-            C3=2*r2; % Equation (3.4)
+            A3=2*a*r1-a;
+            C3=2*r2; 
             
-            D_delta=abs(C3*Delta_pos(j)-Positions(i,j)); % Equation (3.5)-part 3
-            X3=Delta_pos(j)-A3*D_delta; % Equation (3.5)-part 3             
-           % The new weighted updating mechanism (Eq. 3.7 in original paper of Mirjalili)
+            D_delta=abs(C3*Delta_pos(j)-Positions(i,j)); 
+            X3=Delta_pos(j)-A3*D_delta;             
+           % NEW weighted updating mechanism -> Eqs. (11)-(13)
            %------------------------------------------------------------------------            
             Sum_score=(1/Alpha_score)+(1/Beta_score)+(1/Delta_score);
             w(1)=(1/Alpha_score)/Sum_score;
             w(2)=(1/Beta_score)/Sum_score;
             w(3)=(1/Delta_score)/Sum_score;
-            Positions(i,j) = w(1)*X1+w(2)*X2+w(3)*X3;% Modified Equation (3.7)
+            Positions(i,j) = w(1)*X1+w(2)*X2+w(3)*X3;
         end
 		%------------------------------------------------------------------------
-		%% mutation operator
+		%% mutation operator...
 		%------------------------------------------------------------------------
 		if rand()<0.005
 			nmu=ceil(0.1*dim);
@@ -141,8 +138,9 @@ t=[];k=1;
 			sigma=0.1*(VRmax(1)-VRmin(1));
 			Positions(i,rn)=Positions(i,rn)+sigma.*randn(size(rn))';
 		end    
+		% NEW boundary checking mechanism...
 		%------------------------------------------------------------------------
-		Positions(i,:) = boundConstraint(Positions(i,:), old_Positions(i,:),lu); % boundary checking mechanism...
+		Positions(i,:) = boundConstraint(Positions(i,:), old_Positions(i,:),lu); 
 		%------------------------------------------------------------------------
     end   
 			
@@ -151,7 +149,7 @@ t=[];k=1;
         % Calculate objective function for each search agent
 		fitness(i)=feval(fhd,Positions(i,:)',varargin{:});
                 fitcount=fitcount+1;
-	% Selection mechanism...
+	% NEW Greedy Selection mechanism...
 		if 	old_fitness(i) < fitness(i)
 			Positions(i,:) = old_Positions(i,:); 
 			fitness(i) = old_fitness(i);
