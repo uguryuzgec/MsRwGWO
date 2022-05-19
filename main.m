@@ -4,13 +4,18 @@
 %       A Multi-strategy Random weighted Gray Wolf Optimizer        %
 %           for short-term wind speed forecasting                   %
 %          Tufan Inac, Emrah Dokur & Ugur Yuzgec                    %
+%                Cite this article as follow                        %
+% İnaç, T., Dokur, E. & Yüzgeç, U. A multi-strategy random weighted %
+% gray wolf optimizer-based multi-layer perceptron model for short- %
+% term wind speed forecasting. Neural Comput & Applic (2022).       %
+%            https://doi.org/10.1007/s00521-022-07303-4             %
 
 clear 
 close all
 clc
 
 % mex cec14_func.cpp -DWINDOWS
-% 17-22 hibrid cizilmiyor ve 29-30...
+% 17-22 hybrid, not plotted and 29-30...
 % 1-3 unimodal func.
 % 4-16 multimodal func.
 % 23-28 composition func.
@@ -46,7 +51,7 @@ drawnow
 FESindex = [0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]*FES;
 
 % 1. Convergence Analysis
-% istenilen fonksiyonun (convergence curve) yakinsama egrisi...
+% convergence curve of the selected function
 figure (2)
 semilogy(FESindex,solution(func_num,1).t,'-db');
 xlabel('Function Evaluations');
