@@ -51,5 +51,5 @@ figure (2)
 semilogy(FESindex,solution(func_num,1).t,'-db');
 xlabel('Function Evaluations');
 ylabel('Error Value');
-str = sprintf('Convergence Analysis of FN%d',fonk_numara);
+str = sprintf('Convergence Analysis of FN%d',func_num);
 title(str);
