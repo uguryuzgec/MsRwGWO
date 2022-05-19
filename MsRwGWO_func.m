@@ -1,9 +1,14 @@
 %   A Multi-strategy Random weighted Gray Wolf Optimizer            %
 %                       (MsRwGWO)                                   %
-%								    %
+%																                                   	%
 %       A Multi-strategy Random weighted Gray Wolf Optimizer        %
 %           for short-term wind speed forecasting                   %
 %          Tufan Inac, Emrah Dokur & Ugur Yuzgec                    %
+%                Cite this article as follow                        %
+% İnaç, T., Dokur, E. & Yüzgeç, U. A multi-strategy random weighted %
+% gray wolf optimizer-based multi-layer perceptron model for short- %
+% term wind speed forecasting. Neural Comput & Applic (2022).       %
+%            https://doi.org/10.1007/s00521-022-07303-4             %
 
 function [gbest,gbestval,fitcount,t]= MsRwGWO_func(fhd,dim,SearchAgents_no,Max_iter,VRmin,VRmax,X_suru,varargin)
 rand('seed',sum(100*clock));
